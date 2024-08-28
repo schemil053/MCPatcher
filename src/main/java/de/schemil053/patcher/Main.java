@@ -6,10 +6,7 @@ import com.google.gson.JsonParser;
 import de.schemil053.patcher.gui.ChoiceDialog;
 import de.schemil053.patcher.gui.FileSelectionDialog;
 import de.schemil053.patcher.gui.TextDialog;
-import de.schemil053.patcher.utils.FileCopy;
-import de.schemil053.patcher.utils.GUILogger;
-import de.schemil053.patcher.utils.MojangProfile;
-import de.schemil053.patcher.utils.sConfig;
+import de.schemil053.patcher.utils.*;
 import io.sigpipe.jbsdiff.Diff;
 import io.sigpipe.jbsdiff.Patch;
 
@@ -42,7 +39,6 @@ public class Main {
         frame.setVisible(true);
         f = new File(Main.class.getProtectionDomain().getCodeSource().getLocation()
                 .toURI());
-        String appdata = System.getenv("APPDATA");
         if(Main.class.getResourceAsStream("/settings.econf") == null) {
             AtomicInteger c = new AtomicInteger(ChoiceDialog.makeChoice("Wähle deinen Minecraft-Client bitte aus.", "Weiter", "Abbruch"));
             if(c.get() != ChoiceDialog.CHOICE1) {
@@ -137,7 +133,7 @@ public class Main {
 
 
                 dialog1.accepta = s -> {
-                    File mc = new File(appdata, ".minecraft/versions/" + s);
+                    File mc = new File(Util.getWorkingDirectory(), "versions/" + s);
                     if (!mc.isDirectory()) {
                         System.exit(0);
                         return;
@@ -240,7 +236,7 @@ public class Main {
             config.readFromInputStream(Main.class.getResourceAsStream("/settings.econf"));
             String v = config.getString("version");
             String name = config.getString("name");
-            File mc = new File(appdata, ".minecraft/versions/"+config.getString("version"));
+            File mc = new File(Util.getWorkingDirectory(), "versions/"+config.getString("version"));
             boolean debug = false;
             if(config.isBoolean("debug")) {
                 debug = config.getBoolean("debug");
@@ -274,7 +270,7 @@ public class Main {
                     try {
 
                         JsonElement element = JsonParser.parseReader(new FileReader(
-                                new File(appdata, ".minecraft/launcher_profiles.json")
+                                new File(Util.getWorkingDirectory(), "launcher_profiles.json")
                         ));
 
                         JsonObject profiles = element.getAsJsonObject().get("profiles").getAsJsonObject();
@@ -301,7 +297,7 @@ public class Main {
                                 finalGuiLogger.logLine("[OK]");
                             }
 
-                            MojangProfile.install(new File(appdata, ".minecraft/launcher_profiles.json"), name, img);
+                            MojangProfile.install(new File(Util.getWorkingDirectory(), "launcher_profiles.json"), name, img);
 
 
                         }
@@ -321,7 +317,7 @@ public class Main {
                     }
 
 
-                    File cl = new File(appdata, ".minecraft/versions/"+config.getString("name"));
+                    File cl = new File(Util.getWorkingDirectory(), "versions/"+config.getString("name"));
                     if(cl.exists() && !update) {
                         if(finalGuiLogger != null) {
                             finalGuiLogger.logLine(name+" already satisfied.");
